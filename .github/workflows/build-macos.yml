@@ -1,0 +1,39 @@
+name: Build macOS App
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          xcodebuild \
+            -project Cobbweb.xcodeproj \
+            -scheme Cobbweb \
+            -configuration Release \
+            -derivedDataPath build \
+            build
+
+      - name: Create ZIP
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            "build/Build/Products/Release/Cobbweb.app" \
+            "Cobbweb-macOS.zip"
+
+      - name: Upload to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            "Cobbweb-macOS.zip" \
+            --clobber
