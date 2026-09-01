@@ -1,0 +1,448 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		BF953FD12FFBE15A00AF5887 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF953FD02FFBE15A00AF5887 /* Assets.xcassets */; };
+		BF9F20CD30078C0900D61764 /* raycast-extension in Resources */ = {isa = PBXBuildFile; fileRef = BF9F20CC30078C0900D61764 /* raycast-extension */; };
+		LV01 /* CobbwebApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF01 /* CobbwebApp.swift */; };
+		LV02 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF02 /* AppDelegate.swift */; };
+		LV03 /* SavedLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF03 /* SavedLink.swift */; };
+		LV04 /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF04 /* ClipboardMonitor.swift */; };
+		LV05 /* LinkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF05 /* LinkStore.swift */; };
+		LV06 /* LoginItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF06 /* LoginItemManager.swift */; };
+		LV07 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF07 /* ContentView.swift */; };
+		LV08 /* LinkRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF08 /* LinkRowView.swift */; };
+		LV09 /* SavedLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF12 /* SavedLinkTests.swift */; };
+		LV10 /* URLValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF13 /* URLValidationTests.swift */; };
+		LV11 /* ClipboardMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF14 /* ClipboardMonitorTests.swift */; };
+		LV12 /* LinkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF15 /* LinkStoreTests.swift */; };
+		LV13 /* Cobbweb.app in Frameworks */ = {isa = PBXBuildFile; fileRef = LF11 /* Cobbweb.app */; };
+		LV14 /* SemanticSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF17 /* SemanticSearchEngine.swift */; };
+		LV15 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF18 /* PreferencesView.swift */; };
+		LV16 /* MenuRowItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF19 /* MenuRowItem.swift */; };
+		LV17 /* MockLinkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF21 /* MockLinkStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		BF8A87B42FF47A4F006FDBE6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = LVPRJ /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = LVTGT;
+			remoteInfo = Cobbweb;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		BF953FD02FFBE15A00AF5887 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Cobbweb/Assets.xcassets; sourceTree = "<group>"; };
+		BF9F20CC30078C0900D61764 /* raycast-extension */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "raycast-extension"; sourceTree = SOURCE_ROOT; };
+		LF01 /* CobbwebApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobbwebApp.swift; sourceTree = "<group>"; };
+		LF02 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		LF03 /* SavedLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLink.swift; sourceTree = "<group>"; };
+		LF04 /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
+		LF05 /* LinkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkStore.swift; sourceTree = "<group>"; };
+		LF06 /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
+		LF07 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		LF08 /* LinkRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkRowView.swift; sourceTree = "<group>"; };
+		LF09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		LF10 /* Cobbweb.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Cobbweb.entitlements; sourceTree = "<group>"; };
+		LF11 /* Cobbweb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cobbweb.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		LF12 /* SavedLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLinkTests.swift; sourceTree = "<group>"; };
+		LF13 /* URLValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLValidationTests.swift; sourceTree = "<group>"; };
+		LF14 /* ClipboardMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorTests.swift; sourceTree = "<group>"; };
+		LF15 /* LinkStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkStoreTests.swift; sourceTree = "<group>"; };
+		LF16 /* CobbwebTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CobbwebTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		LF17 /* SemanticSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemanticSearchEngine.swift; sourceTree = "<group>"; };
+		LF18 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		LF19 /* MenuRowItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuRowItem.swift; sourceTree = "<group>"; };
+		LF21 /* MockLinkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLinkStore.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		LVFR /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		LVTFR /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LV13 /* Cobbweb.app in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		BF9F20CF30079A7000D61764 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				BF9F20CC30078C0900D61764 /* raycast-extension */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		LGENG /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				LF04 /* ClipboardMonitor.swift */,
+				LF05 /* LinkStore.swift */,
+				LF06 /* LoginItemManager.swift */,
+				LF17 /* SemanticSearchEngine.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		LGMAIN /* Cobbweb */ = {
+			isa = PBXGroup;
+			children = (
+				LF01 /* CobbwebApp.swift */,
+				LF02 /* AppDelegate.swift */,
+				LF09 /* Info.plist */,
+				LF10 /* Cobbweb.entitlements */,
+				LGMOD /* Models */,
+				LGENG /* Engine */,
+				LGVW /* Views */,
+			);
+			path = Cobbweb;
+			sourceTree = "<group>";
+		};
+		LGMOD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				LF03 /* SavedLink.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		LGPROD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				LF11 /* Cobbweb.app */,
+				LF16 /* CobbwebTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		LGROOT = {
+			isa = PBXGroup;
+			children = (
+				BF953FD02FFBE15A00AF5887 /* Assets.xcassets */,
+				LGMAIN /* Cobbweb */,
+				LGTESTS /* CobbwebTests */,
+				LGPROD /* Products */,
+				BF9F20CF30079A7000D61764 /* Recovered References */,
+			);
+			sourceTree = "<group>";
+		};
+		LGTESTS /* CobbwebTests */ = {
+			isa = PBXGroup;
+			children = (
+				LF12 /* SavedLinkTests.swift */,
+				LF13 /* URLValidationTests.swift */,
+				LF14 /* ClipboardMonitorTests.swift */,
+				LF15 /* LinkStoreTests.swift */,
+				LF21 /* MockLinkStore.swift */,
+			);
+			path = CobbwebTests;
+			sourceTree = "<group>";
+		};
+		LGVW /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				LF07 /* ContentView.swift */,
+				LF08 /* LinkRowView.swift */,
+				LF18 /* PreferencesView.swift */,
+				LF19 /* MenuRowItem.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		LVTGT /* Cobbweb */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = LVCFL2 /* Build configuration list for PBXNativeTarget "Cobbweb" */;
+			buildPhases = (
+				LVSRC /* Sources */,
+				LVFR /* Frameworks */,
+				LVRES /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Cobbweb;
+			productName = Cobbweb;
+			productReference = LF11 /* Cobbweb.app */;
+			productType = "com.apple.product-type.application";
+		};
+		LVTTST /* CobbwebTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = LVCFL3 /* Build configuration list for PBXNativeTarget "CobbwebTests" */;
+			buildPhases = (
+				LVTSRC /* Sources */,
+				LVTFR /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				LVTDEP /* PBXTargetDependency */,
+			);
+			name = CobbwebTests;
+			productName = CobbwebTests;
+			productReference = LF16 /* CobbwebTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		LVPRJ /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					LVTGT = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					LVTTST = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = LVTGT;
+					};
+				};
+			};
+			buildConfigurationList = LVCFL1 /* Build configuration list for PBXProject "Cobbweb" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = LGROOT;
+			productRefGroup = LGPROD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				LVTGT /* Cobbweb */,
+				LVTTST /* CobbwebTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		LVRES /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF9F20CD30078C0900D61764 /* raycast-extension in Resources */,
+				BF953FD12FFBE15A00AF5887 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		LVSRC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LV01 /* CobbwebApp.swift in Sources */,
+				LV02 /* AppDelegate.swift in Sources */,
+				LV03 /* SavedLink.swift in Sources */,
+				LV04 /* ClipboardMonitor.swift in Sources */,
+				LV05 /* LinkStore.swift in Sources */,
+				LV06 /* LoginItemManager.swift in Sources */,
+				LV14 /* SemanticSearchEngine.swift in Sources */,
+				LV07 /* ContentView.swift in Sources */,
+				LV08 /* LinkRowView.swift in Sources */,
+				LV15 /* PreferencesView.swift in Sources */,
+				LV16 /* MenuRowItem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		LVTSRC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				LV09 /* SavedLinkTests.swift in Sources */,
+				LV10 /* URLValidationTests.swift in Sources */,
+				LV11 /* ClipboardMonitorTests.swift in Sources */,
+				LV12 /* LinkStoreTests.swift in Sources */,
+				LV17 /* MockLinkStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		LVTDEP /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = LVTGT /* Cobbweb */;
+			targetProxy = BF8A87B42FF47A4F006FDBE6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		LVCDBG /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		LVCRLS /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		LVTDBG /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Cobbweb/Cobbweb.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/Cobbweb/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourteam.cobbweb;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		LVTRLS /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Cobbweb/Cobbweb.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "$(SRCROOT)/Cobbweb/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourteam.cobbweb;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		LVTSTDBG /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "$(SRCROOT)/Cobbweb/Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourteam.cobbweb.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cobbweb.app/Contents/MacOS/Cobbweb";
+			};
+			name = Debug;
+		};
+		LVTSTRLS /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "$(SRCROOT)/Cobbweb/Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourteam.cobbweb.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cobbweb.app/Contents/MacOS/Cobbweb";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		LVCFL1 /* Build configuration list for PBXProject "Cobbweb" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				LVCDBG /* Debug */,
+				LVCRLS /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		LVCFL2 /* Build configuration list for PBXNativeTarget "Cobbweb" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				LVTDBG /* Debug */,
+				LVTRLS /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		LVCFL3 /* Build configuration list for PBXNativeTarget "CobbwebTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				LVTSTDBG /* Debug */,
+				LVTSTRLS /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = LVPRJ /* Project object */;
+}

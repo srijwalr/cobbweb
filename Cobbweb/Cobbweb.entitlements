@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Sandbox disabled: required for launchd plist registration on macOS 12
+         and for NSPasteboard polling to work reliably without entitlement prompts.
+         Note: disabling sandbox means the app cannot be distributed via Mac App Store.
+         For App Store distribution, re-enable sandbox and use SMAppService (macOS 13+)
+         or the helper bundle approach for macOS 12. -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+
+    <key>com.apple.security.network.client</key>
+    <true/>
+</dict>
+</plist>
