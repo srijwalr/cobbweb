@@ -1,6 +1,6 @@
 # [Cobbweb](https://www.cobbweb.app)
 
-**A native macOS menu bar app that silently captures every web link you copy — enriched with page titles and favicons, searchable by meaning, stored entirely on-device.**
+**A native macOS menu bar app that silently captures every web link you copy — enriched with page titles and favicons, searchable, stored entirely on-device.**
 
 No accounts. No cloud sync. No telemetry. Just your links.
 
@@ -9,7 +9,7 @@ No accounts. No cloud sync. No telemetry. Just your links.
 ## Features
 
 - **Automatic capture** — polls your clipboard every 1.5 seconds and saves any `http://` or `https://` URL you copy, skipping duplicates silently
-- **Rich metadata** — fetches page titles and favicons via `LPMetadataProvider`, with a Google favicon fallback for sites that block scrapers (Google, YouTube, etc.)
+- **Rich metadata** — fetches page titles, favicons, and page descriptions (`og:description` / `meta description`) for every captured link; descriptions are backfilled for links captured before the feature existed
 - **On-device semantic search** — powered by Apple's `NaturalLanguage` framework; understands meaning, not just exact words; no network requests, no external LLMs
 - **Pin links** — pin important links to float them above the list; they survive new captures and persist across restarts
 - **Configurable limits** — keep between 10 and 200 links; choose how many rows are visible at once
@@ -81,7 +81,9 @@ Each captured URL is passed to `LPMetadataProvider` to fetch the page title and 
 https://www.google.com/s2/favicons?domain=<host>&sz=64
 ```
 
-Icons are not persisted — they are re-fetched on launch.
+The page description (`og:description` or `meta name="description"`) is fetched independently by downloading the first 32 KB of the page HTML and parsing the meta tags. This runs in parallel with the favicon fetch and doesn't block it. Descriptions are also backfilled on launch for any link that was captured before this feature existed.
+
+Icons are not persisted — they are re-fetched on launch. Titles and descriptions are persisted.
 
 ### Semantic Search
 
@@ -97,13 +99,14 @@ Search runs entirely on-device using Apple's `NaturalLanguage` framework.
 
 **Scoring strategy:**
 1. Exact substring match in any field → distance `0.0`, shown first as "Exact Matches"
-2. Field-weighted semantic scoring: title (1.0) > host (0.8) > path words (0.6) > full URL (0.2)
+2. Field-weighted semantic scoring: title (1.0) > description (0.9) > host (0.8) > path words (0.6) > full URL (0.2)
 3. Lexical boost: partial word overlap reduces distance by 20%
 4. Links above the threshold are excluded
 5. Remaining results sorted by ascending distance and shown as "Related"
 6. Debounced 250 ms — no UI stutter while typing
+7. Stale results discarded — if the query changes while search is running, the in-flight result is dropped
 
-Each link's **searchable profile** concatenates page title + host + URL path words (e.g. `/search-demo-article` → `"search demo article"`) + full URL, so even links without a fetched title are semantically discoverable.
+Each link's **searchable profile** concatenates page title + page description + host + URL path words (e.g. `/search-demo-article` → `"search demo article"`) + full URL, so even links without a fetched title are semantically discoverable.
 
 > True cross-concept search (e.g. "curry" finding "tikka masala") requires macOS 13+ where `sentenceEmbedding` is reliably available.
 
