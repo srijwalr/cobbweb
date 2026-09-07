@@ -1,4 +1,4 @@
-# Cobbweb
+# [Cobbweb](https://www.cobbweb.app)
 
 **A native macOS menu bar app that silently captures every web link you copy — enriched with page titles and favicons, searchable by meaning, stored entirely on-device.**
 

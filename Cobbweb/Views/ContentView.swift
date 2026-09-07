@@ -66,7 +66,6 @@ struct ContentView: View {
         }
         .frame(width: 320, height: idealHeight)
         .background(.ultraThinMaterial)
-        .animation(.easeInOut(duration: 0.2), value: monitor.displayedLinks.count)
         .animation(.easeInOut(duration: 0.2), value: monitor.searchText.isEmpty)
     }
 

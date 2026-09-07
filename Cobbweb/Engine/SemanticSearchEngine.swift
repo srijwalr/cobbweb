@@ -114,6 +114,7 @@ final class SemanticSearchEngine {
     /// More precise than checking one concatenated blob.
     private func lexicalMatch(query: String, link: SavedLink) -> Bool {
         if let title = link.title, title.lowercased().contains(query) { return true }
+        if let desc = link.pageDescription, desc.lowercased().contains(query) { return true }
         if link.host.lowercased().contains(query) { return true }
         if link.rawURL.absoluteString.lowercased().contains(query) { return true }
         return false
@@ -139,6 +140,7 @@ final class SemanticSearchEngine {
 
         let fields: [Field] = [
             Field(text: link.title ?? "",               weight: 1.0),
+            Field(text: link.pageDescription ?? "",     weight: 0.9),
             Field(text: link.host,                      weight: 0.8),
             Field(text: pathWords,                      weight: 0.6),
             Field(text: link.rawURL.absoluteString,     weight: 0.2),

@@ -15,7 +15,15 @@ final class ClipboardMonitor: ObservableObject {
     @Published var links: [SavedLink] = []
 
     /// Current search query. Set this from the UI — search runs automatically.
-    @Published var searchText: String = ""
+    @Published var searchText: String = "" {
+        didSet {
+            // When search is fully cleared, restore all links immediately without
+            // waiting for the 250ms debounce — avoids a blank list on clear.
+            // Intermediate backspace states are handled by the debounced pipeline.
+            guard searchText.isEmpty, !oldValue.isEmpty else { return }
+            searchResults = links.map { SearchResult(link: $0, category: .exact, distance: 0) }
+        }
+    }
 
     /// Categorised search results for the UI.
     /// Contains .exact and .related categories for grouped rendering.
@@ -86,7 +94,10 @@ final class ClipboardMonitor: ObservableObject {
             .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
             .sink { [weak self] allLinks, query in
                 guard let self else { return }
-                self.searchEngine.search(query: query, in: allLinks) { results in
+                self.searchEngine.search(query: query, in: allLinks) { [weak self] results in
+                    guard let self else { return }
+                    // Discard stale results if the query changed while search was running.
+                    guard self.searchText == query else { return }
                     self.searchResults = results
                 }
             }
@@ -180,8 +191,8 @@ final class ClipboardMonitor: ObservableObject {
         }
     }
 
-    /// Updates title and/or icon for an existing link, then persists.
-    private func updateLink(id: UUID, title: String?, icon: NSImage?) {
+    /// Updates title, description, and/or icon for an existing link, then persists.
+    private func updateLink(id: UUID, title: String?, pageDescription: String?, icon: NSImage?) {
         DispatchQueue.main.async { [weak self] in
             guard let self,
                   let index = self.links.firstIndex(where: { $0.id == id }) else { return }
@@ -190,6 +201,10 @@ final class ClipboardMonitor: ObservableObject {
 
             if let title, self.links[index].title != title {
                 self.links[index].title = title
+                changed = true
+            }
+            if let pageDescription, self.links[index].pageDescription != pageDescription {
+                self.links[index].pageDescription = pageDescription
                 changed = true
             }
             if let icon {
@@ -205,10 +220,13 @@ final class ClipboardMonitor: ObservableObject {
 
     /// Fetches metadata for a link.
     /// - Parameter iconOnly: When true (re-fetch on launch), skip updating the title
-    ///   since it was already persisted — only load the favicon into memory.
+    ///   and description since they were already persisted — only load the favicon into memory.
     private func fetchMetadata(for link: SavedLink, iconOnly: Bool) {
         let provider = LPMetadataProvider()
         provider.shouldFetchSubresources = true
+
+        // Fire description fetch independently — it doesn't depend on LPMetadataProvider.
+        if !iconOnly { fetchPageDescription(for: link) }
 
         provider.startFetchingMetadata(for: link.rawURL) { [weak self] metadata, error in
             guard let self else { return }
@@ -235,7 +253,7 @@ final class ClipboardMonitor: ObservableObject {
 
                     if let icon {
                         // LPMetadataProvider returned a usable icon.
-                        self.updateLink(id: link.id, title: title, icon: icon)
+                        self.updateLink(id: link.id, title: title, pageDescription: nil, icon: icon)
                     } else {
                         // Provider gave us an iconProvider but loading failed —
                         // fall back to the favicon service.
@@ -250,12 +268,59 @@ final class ClipboardMonitor: ObservableObject {
         }
     }
 
+    /// Fetches the page description by downloading a small chunk of the HTML and
+    /// parsing the first `og:description` or `meta name="description"` tag found.
+    /// Fires `updateLink` independently so it doesn't block the icon path.
+    private func fetchPageDescription(for link: SavedLink) {
+        var request = URLRequest(url: link.rawURL)
+        // Only fetch the first 32 KB — enough to capture any <head> meta tags.
+        request.setValue("bytes=0-32767", forHTTPHeaderField: "Range")
+        request.timeoutInterval = 10
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, _, _ in
+            guard let self, let data, let html = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .isoLatin1) else { return }
+
+            let description = Self.extractDescription(from: html)
+            guard let description else { return }
+
+            self.updateLink(id: link.id, title: nil, pageDescription: description, icon: nil)
+        }.resume()
+    }
+
+    /// Extracts the first `og:description` or `meta name="description"` content from raw HTML.
+    /// Prefers `og:description` since it's typically more concise and curated.
+    static func extractDescription(from html: String) -> String? {
+        // Patterns tried in priority order.
+        let patterns = [
+            #"<meta[^>]+property=["\']og:description["\'][^>]+content=["\'](.*?)["\']"#,
+            #"<meta[^>]+content=["\'](.*?)["\'][^>]+property=["\']og:description["\']"#,
+            #"<meta[^>]+name=["\']description["\'][^>]+content=["\'](.*?)["\']"#,
+            #"<meta[^>]+content=["\'](.*?)["\'][^>]+name=["\']description["\']"#,
+        ]
+
+        for pattern in patterns {
+            if let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive, .dotMatchesLineSeparators]),
+               let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..., in: html)),
+               let range = Range(match.range(at: 1), in: html) {
+                let description = String(html[range])
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .replacingOccurrences(of: "&#39;",  with: "'")
+                    .replacingOccurrences(of: "&amp;",  with: "&")
+                    .replacingOccurrences(of: "&quot;", with: "\"")
+                    .replacingOccurrences(of: "&lt;",   with: "<")
+                    .replacingOccurrences(of: "&gt;",   with: ">")
+                if !description.isEmpty { return description }
+            }
+        }
+        return nil
+    }
+
     /// Fetches a favicon via Google's public favicon service.
     /// Works reliably for domains that block LPMetadataProvider icon fetching.
     /// URL pattern: https://www.google.com/s2/favicons?domain=<host>&sz=64
     private func fetchFaviconFallback(for link: SavedLink, title: String?) {
         guard let host = link.rawURL.host else {
-            updateLink(id: link.id, title: title, icon: nil)
+            updateLink(id: link.id, title: title, pageDescription: nil, icon: nil)
             return
         }
 
@@ -266,7 +331,7 @@ final class ClipboardMonitor: ObservableObject {
         ]
 
         guard let faviconURL = components?.url else {
-            updateLink(id: link.id, title: title, icon: nil)
+            updateLink(id: link.id, title: title, pageDescription: nil, icon: nil)
             return
         }
 
@@ -280,7 +345,7 @@ final class ClipboardMonitor: ObservableObject {
                 icon = image
             }
 
-            self.updateLink(id: link.id, title: title, icon: icon)
+            self.updateLink(id: link.id, title: title, pageDescription: nil, icon: icon)
         }.resume()
     }
 
