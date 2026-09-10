@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		BF953FD12FFBE15A00AF5887 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BF953FD02FFBE15A00AF5887 /* Assets.xcassets */; };
-		BF9F20CD30078C0900D61764 /* raycast-extension in Resources */ = {isa = PBXBuildFile; fileRef = BF9F20CC30078C0900D61764 /* raycast-extension */; };
 		LV01 /* CobbwebApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF01 /* CobbwebApp.swift */; };
 		LV02 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF02 /* AppDelegate.swift */; };
 		LV03 /* SavedLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = LF03 /* SavedLink.swift */; };
@@ -40,7 +39,6 @@
 
 /* Begin PBXFileReference section */
 		BF953FD02FFBE15A00AF5887 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Cobbweb/Assets.xcassets; sourceTree = "<group>"; };
-		BF9F20CC30078C0900D61764 /* raycast-extension */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "raycast-extension"; sourceTree = SOURCE_ROOT; };
 		LF01 /* CobbwebApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobbwebApp.swift; sourceTree = "<group>"; };
 		LF02 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		LF03 /* SavedLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLink.swift; sourceTree = "<group>"; };
@@ -85,7 +83,6 @@
 		BF9F20CF30079A7000D61764 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				BF9F20CC30078C0900D61764 /* raycast-extension */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -139,7 +136,6 @@
 				LGMAIN /* Cobbweb */,
 				LGTESTS /* CobbwebTests */,
 				LGPROD /* Products */,
-				BF9F20CF30079A7000D61764 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -246,7 +242,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF9F20CD30078C0900D61764 /* raycast-extension in Resources */,
 				BF953FD12FFBE15A00AF5887 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
