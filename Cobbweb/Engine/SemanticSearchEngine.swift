@@ -3,11 +3,13 @@
 //
 // Design decisions:
 // - Separate thresholds for sentence vs word embedding (different distance scales)
-// - Field-weighted scoring: title > host > path > full URL
+// - Field-weighted scoring: title > description > host > path > full URL
 // - Stopword filtering so common words don't pollute word-embedding averages
 // - Best-token-wins for word embedding (min not mean) to avoid weak-token drag
 // - Lexical boost: partial word overlap adds a score bonus on top of semantic distance
 // - Short tokens (2 chars) preserved for terms like "ai", "ui", "js", "go"
+// - Per-link fields are pre-lowercased and tokenised once per search call,
+//   not re-computed for every field × every embedding distance call
 
 import Foundation
 import NaturalLanguage
@@ -19,6 +21,23 @@ struct SearchResult {
     let link: SavedLink
     let category: Category
     let distance: Double
+}
+
+// MARK: - Prepared link (computed once per search call)
+
+private struct PreparedLink {
+    let link: SavedLink
+
+    struct Field {
+        let text: String        // lowercased
+        let tokens: [String]    // pre-tokenised
+        let weight: Double
+    }
+
+    let fields: [Field]
+
+    /// Flat lowercased string across all fields for lexical match.
+    let lexicalBlob: String
 }
 
 // MARK: - Engine
@@ -76,29 +95,31 @@ final class SemanticSearchEngine {
         queue.async { [weak self] in
             guard let self else { return }
 
-            let lower        = trimmed.lowercased()
-            let queryTokens  = self.tokenise(lower)
+            let lower       = trimmed.lowercased()
+            let queryTokens = Self.fastTokenise(lower)
+
+            // Pre-process all links once — lowercased fields + tokens computed here,
+            // not repeated inside the per-field scoring loop.
+            let prepared = links.map { Self.prepare($0) }
 
             var exactResults:   [SearchResult] = []
             var relatedResults: [(SearchResult, Double)] = []
 
-            for link in links {
-                // 1. Exact substring match — always shown first, distance 0.
-                if self.lexicalMatch(query: lower, link: link) {
-                    exactResults.append(SearchResult(link: link, category: .exact, distance: 0))
+            for p in prepared {
+                // 1. Fast lexical match against pre-built blob.
+                if p.lexicalBlob.contains(lower) {
+                    exactResults.append(SearchResult(link: p.link, category: .exact, distance: 0))
                     continue
                 }
 
-                // 2. Semantic scoring against individual fields (not one big blob).
-                let distance = self.fieldWeightedScore(
-                    queryTokens: queryTokens,
-                    query: lower,
-                    link: link
-                )
+                // 2. Semantic scoring using pre-computed fields.
+                let distance = self.fieldWeightedScore(queryTokens: queryTokens,
+                                                       query: lower,
+                                                       prepared: p)
 
                 if distance <= self.effectiveThreshold {
                     relatedResults.append(
-                        (SearchResult(link: link, category: .related, distance: distance), distance)
+                        (SearchResult(link: p.link, category: .related, distance: distance), distance)
                     )
                 }
             }
@@ -108,56 +129,55 @@ final class SemanticSearchEngine {
         }
     }
 
-    // MARK: - Lexical Match
+    // MARK: - Preparation
 
-    /// Checks all meaningful fields individually for substring presence.
-    /// More precise than checking one concatenated blob.
-    private func lexicalMatch(query: String, link: SavedLink) -> Bool {
-        if let title = link.title, title.lowercased().contains(query) { return true }
-        if let desc = link.pageDescription, desc.lowercased().contains(query) { return true }
-        if link.host.lowercased().contains(query) { return true }
-        if link.rawURL.absoluteString.lowercased().contains(query) { return true }
-        return false
-    }
-
-    // MARK: - Field-Weighted Scoring
-
-    /// Scores each field separately and combines with weights.
-    /// Title is most important, then host, then path words, then full URL.
-    /// This prevents URL boilerplate from diluting a strong title match.
-    private func fieldWeightedScore(
-        queryTokens: [String],
-        query: String,
-        link: SavedLink
-    ) -> Double {
-        struct Field { let text: String; let weight: Double }
-
+    /// Pre-lowercases and tokenises all fields for a link.
+    /// Called once per link per search — results used for both lexical and semantic paths.
+    private static func prepare(_ link: SavedLink) -> PreparedLink {
         let pathWords = link.rawURL.pathComponents
             .joined(separator: " ")
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
             .filter { $0.count >= 2 }
             .joined(separator: " ")
 
-        let fields: [Field] = [
-            Field(text: link.title ?? "",               weight: 1.0),
-            Field(text: link.pageDescription ?? "",     weight: 0.9),
-            Field(text: link.host,                      weight: 0.8),
-            Field(text: pathWords,                      weight: 0.6),
-            Field(text: link.rawURL.absoluteString,     weight: 0.2),
-        ].filter { !$0.text.isEmpty }
+        let rawFields: [(String, Double)] = [
+            (link.title ?? "",              1.0),
+            (link.pageDescription ?? "",   0.9),
+            (link.host,                    0.8),
+            (pathWords,                    0.6),
+            (link.rawURL.absoluteString,   0.2),
+        ].filter { !$0.0.isEmpty }
 
-        guard !fields.isEmpty else { return Self.maxDistance }
+        let fields = rawFields.map { text, weight -> PreparedLink.Field in
+            let lower = text.lowercased()
+            return PreparedLink.Field(text: lower, tokens: Self.fastTokenise(lower), weight: weight)
+        }
 
-        var weightedSum   = 0.0
-        var totalWeight   = 0.0
+        // Lexical blob: space-joined lowercased field texts for a single .contains check.
+        let blob = fields.map(\.text).joined(separator: " ")
 
-        for field in fields {
+        return PreparedLink(link: link, fields: fields, lexicalBlob: blob)
+    }
+
+    // MARK: - Field-Weighted Scoring
+
+    private func fieldWeightedScore(
+        queryTokens: [String],
+        query: String,
+        prepared: PreparedLink
+    ) -> Double {
+        guard !prepared.fields.isEmpty else { return Self.maxDistance }
+
+        var weightedSum = 0.0
+        var totalWeight = 0.0
+
+        for field in prepared.fields {
             let fieldScore = semanticScore(queryTokens: queryTokens,
                                            query: query,
-                                           target: field.text.lowercased())
-            // Apply lexical boost: if field contains any query token literally,
-            // reduce distance by 20% to reward partial overlap.
-            let boost = queryTokens.contains { field.text.lowercased().contains($0) } ? 0.8 : 1.0
+                                           targetTokens: field.tokens,
+                                           target: field.text)
+            // Lexical boost: field already lowercased, no extra allocation needed.
+            let boost = queryTokens.contains { field.text.contains($0) } ? 0.8 : 1.0
             weightedSum += fieldScore * boost * field.weight
             totalWeight += field.weight
         }
@@ -167,25 +187,24 @@ final class SemanticSearchEngine {
 
     // MARK: - Semantic Score (single field vs query)
 
-    private func semanticScore(queryTokens: [String], query: String, target: String) -> Double {
-        // Sentence embedding: compare full query string against field text.
+    private func semanticScore(
+        queryTokens: [String],
+        query: String,
+        targetTokens: [String],
+        target: String
+    ) -> Double {
+        // Sentence embedding: single distance call per field.
         if let se = sentenceEmbedding {
             return se.distance(between: query, and: target)
         }
 
-        // Word embedding: best-token-wins per query token (min not mean).
-        // This means one strong-matching token can carry the result,
-        // rather than weak tokens dragging the average up.
+        // Word embedding: best-token-wins per query token.
         if let we = wordEmbedding {
-            let targetTokens = tokenise(target)
             guard !targetTokens.isEmpty, !queryTokens.isEmpty else { return Self.maxDistance }
 
-            // For each query token, find its closest target token.
             let perQueryToken: [Double] = queryTokens.map { qt in
                 targetTokens.map { we.distance(between: qt, and: $0) }.min() ?? Self.maxDistance
             }
-
-            // Use the minimum across query tokens — best match wins.
             return perQueryToken.min() ?? Self.maxDistance
         }
 
@@ -194,35 +213,19 @@ final class SemanticSearchEngine {
 
     // MARK: - Effective Threshold
 
-    /// Returns the appropriate threshold based on which model is loaded.
     private var effectiveThreshold: Double {
         if sentenceEmbedding != nil { return Self.sentenceThreshold }
         if wordEmbedding     != nil { return Self.wordThreshold }
-        return 0 // no model → no semantic results
+        return 0
     }
 
     // MARK: - Tokenisation
 
-    /// Splits text into lowercase tokens.
-    /// Keeps tokens ≥ 2 chars (preserves "ai", "ui", "js", "go").
-    /// Removes English stopwords that add noise to embeddings.
-    private func tokenise(_ text: String) -> [String] {
-        var tokens: [String] = []
-        let tagger = NLTagger(tagSchemes: [.tokenType])
-        tagger.string = text
-        tagger.enumerateTags(in: text.startIndex..<text.endIndex,
-                              unit: .word, scheme: .tokenType) { _, range in
-            let word = String(text[range]).lowercased()
-            if word.count >= 2, !Self.stopwords.contains(word) {
-                tokens.append(word)
-            }
-            return true
-        }
-        if tokens.isEmpty {
-            tokens = text
-                .components(separatedBy: CharacterSet.alphanumerics.inverted)
-                .filter { $0.count >= 2 && !Self.stopwords.contains($0.lowercased()) }
-        }
-        return tokens
+    /// Fast tokeniser using character splitting — avoids NLTagger overhead during search.
+    /// NLTagger is accurate but slow to instantiate; for search-time tokenisation the
+    /// simple split is indistinguishable in quality for short field text.
+    static func fastTokenise(_ text: String) -> [String] {
+        text.components(separatedBy: CharacterSet.alphanumerics.inverted)
+            .filter { $0.count >= 2 && !stopwords.contains($0) }
     }
 }
